@@ -10,14 +10,20 @@
 //Conexiones del display
 LiquidCrystal_I2C lcd(0x3F, 20, 4);
 
-#define primer_fila  0
+#define primer_fila   0
 #define segunda_fila  1
 #define tercera_fila  2
-#define cuarta_fila  3
+#define cuarta_fila   3
 
 //Conexiones del encoder
 Encoder myEncoder(2, 3);
 int g_btnPressed;   //guarda estado del encoder
+
+//Rotative Encoder constants
+#define NoPressed   0
+#define Ok          1
+#define Left        2
+#define Right       3
 
 //cantidad de paginas por pantalla
 #define nPagPpal                  3
@@ -27,7 +33,6 @@ int g_btnPressed;   //guarda estado del encoder
 #define nPagConfSubMenuExtTemp    1
 #define nPagConfMenuCol           3
 #define nPagCreditos              1
-
 
 //numero de paginas por pantalla
 const int nPagDisplay[7] = {nPagPpal,                 //menú principal
@@ -55,14 +60,16 @@ const int nPagDisplay[7] = {nPagPpal,                 //menú principal
 const int numMainMenuOptions = 3;
 
 // Define los nombres de las opciones del menú principal
-String mainMenuOptionNames[numMainMenuOptions] = {"Opción 1", "Opción 2", "Opción 3"};
+//String mainMenuOptionNames[numMainMenuOptions] = {"Opción 1", "Opción 2", "Opción 3"};
 
-char* screenPresentacion[] = {
+
+const char* screenPresentacion[] = {
                              "      Proyecto      ",
                              "     PlasticBot     ",
                              "        v2.0        ",
                              "                    ",
                             };
+
                           
 char* screenPagPpal_1[] = {
                           "Ext1:     Col1:     ",
@@ -177,8 +184,8 @@ volatile int currentMainMenuIndex = 0;
 volatile long lastValue = -999;
 
 // Prototipos de funciones
-
-//void PetConv_Init(PETfilConv *_petFilConv);
+void imprimirPresentacion(const char *_valor);
+void PetConv_Init(PETfilConv *_petFilConv);
 
 void showMainMenu();
 void showSubMenu();
@@ -190,7 +197,7 @@ void setup() {
   lcd.backlight();
 
   // Muestra pantalla presentacion
-  imprimirPantalla(screenPresentacion[]);
+  imprimirPresentacion(screenPresentacion[]);
 
   // Define la interrupción externa para el encoder
   attachInterrupt(digitalPinToInterrupt(2), updateMenu, CHANGE);
@@ -201,15 +208,15 @@ void loop()
   // Nada que hacer aquí
 }
 
-void imprimirPantalla(char &valor)
+void imprimirPresentacion(const char *_valor)
 {
   // Limpia el display
   lcd.clear();
 
   // Muestra la opción actual del menú principal en el display
   lcd.setCursor(primer_fila, 0);
-  lcd.print();
-  
+  lcd.print(_valor[0]);
+/*  
 //  lcd.print("> ");
   lcd.print(mainMenuOptionNames[currentMainMenuIndex]);
 
@@ -219,8 +226,10 @@ void imprimirPantalla(char &valor)
 
   // Define la posición del cursor en la segunda fila del display
   lcd.setCursor(0, 1);
+*/
 }
 
+/*
 void showSubMenu()
 {
   // Limpia el display
@@ -238,7 +247,9 @@ void showSubMenu()
   // Define la posición del cursor en la segunda fila del display
   lcd.setCursor(0, 1);
 }
+*/
 
+/*
 void updateMenu()
 {
   // Obtiene el valor actual del encoder
@@ -267,3 +278,4 @@ void updateMenu()
     showMainMenu();
   }
 }
+*/

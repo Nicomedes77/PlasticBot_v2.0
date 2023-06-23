@@ -17,12 +17,4 @@ void clearAllCursor(void);
 void printScreen(char *screen[]);
 void clearScreen(void);
 
-//Rotative Encoder constants
-#define NoPressed   0
-#define Ok          1
-#define Left        2
-#define Right       3
-
-
-
 #endif // H_GUI

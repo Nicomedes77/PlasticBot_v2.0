@@ -6,3 +6,9 @@
 #include "PETalarms.h"
 #include "motorControl.h"
 #include "v1.0.h"
+#include "math.h"
+
+float getTemp(void)
+{
+
+}
