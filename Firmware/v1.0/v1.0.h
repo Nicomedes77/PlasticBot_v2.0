@@ -37,13 +37,13 @@
 #define ext7_adc  A6        //PIN = A6
 
 //colectores
-#define D9     col1_pwm        //PIN = D9
-#define D10    col2_pwm        //PIN = D10
-#define D11    col3_pwm        //PIN = D11
-#define D12    col4_pwm        //PIN = D12
-#define D44    col5_pwm        //PIN = D44
-#define D45    col6_pwm        //PIN = D45
-#define D46    col7_pwm        //PIN = D46
+#define col1_pwm  9             //PIN = D9
+#define col2_pwm  10            //PIN = D10
+#define col3_pwm  11            //PIN = D11
+#define col4_pwm  12            //PIN = D12
+#define col5_pwm  44            //PIN = D44
+#define col6_pwm  45            //PIN = D45
+#define col7_pwm  46            //PIN = D46
 
 
 struct PETfilConv{
