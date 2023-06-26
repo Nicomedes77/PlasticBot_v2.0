@@ -7,17 +7,18 @@
 #include "motorControl.h"
 #include "v1.0.h"
 
+//***************************************************************
+//*************** VARIABLES Y CONSTANTES GLOBALES ***************
+//***************************************************************
+
 //Conexiones del display
 LiquidCrystal_I2C lcd(0x3F, 20, 4);
-
-#define primer_fila   0
-#define segunda_fila  1
-#define tercera_fila  2
-#define cuarta_fila   3
 
 //Conexiones del encoder
 Encoder myEncoder(2, 3);
 int g_btnPressed;   //guarda estado del encoder
+// Define el valor anterior del encoder
+volatile long lastValue = -999;
 
 //Rotative Encoder constants
 #define NoPressed   0
@@ -63,7 +64,7 @@ const int numMainMenuOptions = 3;
 //String mainMenuOptionNames[numMainMenuOptions] = {"Opción 1", "Opción 2", "Opción 3"};
 
 
-const char* screenPresentacion[] = {
+const char screenPresentacion[4][20] PROGMEM = {
                              "      Proyecto      ",
                              "     PlasticBot     ",
                              "        v2.0        ",
@@ -71,120 +72,118 @@ const char* screenPresentacion[] = {
                             };
 
                           
-char* screenPagPpal_1[] = {
+const char screenPagPpal_1[4][20]PROGMEM = {
                           "Ext1:     Col1:     ",
                           "Ext2:     Col2:     ",
                           "Ext3:     Col3:     ",
                           "Alarma sonora:      ",
                           };
 
-char* screenPagPpal_2[] = {
+const char screenPagPpal_2[4][20]PROGMEM = {
                           "Ext4:     Col4:     ",
                           "Ext5:     Col5:     ",
                           "Ext6:     Col6:     ",
                           "Alarma sonora:      ",
                           };
 
-char* screenPagPpal_3[] = {
+const char screenPagPpal_3[4][20]PROGMEM = {
                           "Ext7:     Col7:     ",
                           "Ext8:     Col8:     ",
                           "Ext9:     Col9:     ",
                           "Alarma sonora:      ",
                           };
 
-char* screenPagConfMenuPpal_1[] = {
+const char screenPagConfMenuPpal_1[4][20]PROGMEM = {
                                   "Volver...           ",
                                   "Extrusores fil.     ",
                                   "Colectores fil.     ",
                                   "Alarma              ",
                                   };
 
-char* screenPagConfMenuPpal_2[] = {
+const char screenPagConfMenuPpal_2[4][20]PROGMEM = {
                                   "Creditos            ",
                                   "                    ",
                                   "                    ",
                                   "                    ",
                                   };
 
-char* screenPagConfMenuExt_1[] = {
+const char screenPagConfMenuExt_1[4][20]PROGMEM = {
                                   "Volver...           ",
                                   "Extrusor 1          ",
                                   "Extrusor 2          ",
                                   "Extrusor 3          ",
                                   };
 
-char* screenPagConfMenuExt_2[] = {
+const char screenPagConfMenuExt_2[4][20]PROGMEM = {
                                   "Volver...           ",
                                   "Extrusor 4          ",
                                   "Extrusor 5          ",
                                   "Extrusor 6          ",
                                   };
 
-char* screenPagConfMenuExt_3[] = {
+const char screenPagConfMenuExt_3[4][20]PROGMEM = {
                                   "Volver...           ",
                                   "Extrusor 7          ",
                                   "Extrusor 8          ",
                                   "Extrusor 9          ",
                                   };
 
-char* screenPagConfSubMenuExt_1[] = {
+const char screenPagConfSubMenuExt_1[4][20] = {
                                     "Volver...           ",
                                     "Apagar              ",
                                     "Purgar              ",
                                     "Config. Temp.       ",
                                     };
 
-char* screenPagConfSubMenuExtTemp_1[] = {
+const char screenPagConfSubMenuExtTemp_1[4][20]PROGMEM = {
                                         "Elija temp. trabajo ",
                                         "                    ",
                                         "            /250 C  ",
                                         "                    ",
                                         };
 
-char* screenPagConfMenuCol_1[] = {
+const char screenPagConfMenuCol_1[4][20]PROGMEM = {
                                   "Volver...           ",
                                   "Colector 1          ",
                                   "Colector 2          ",
                                   "Colector 3          ",
                                   };
 
-char* screenPagConfMenuCol_2[] = {
+const char screenPagConfMenuCol_2[4][20]PROGMEM = {
                                   "Volver...           ",
                                   "Colector 4          ",
                                   "Colector 5          ",
                                   "Colector 6          ",
                                   };
 
-char* screenPagConfMenuCol_3[] = {
+const char screenPagConfMenuCol_3[4][20]PROGMEM = {
                                   "Volver...           ",
                                   "Colector 7          ",
                                   "Colector 8          ",
                                   "Colector 9          ",
                                   };
 
-char* screenPagCreditos[] = {
+const char screenPagCreditos[4][20]PROGMEM = {
                             "  PlasticBot es un  ",
                             "   proyecto libre   ",
                             "Esp.Ing.Vargas Alice",
                             "      Año 2023      ",
                              };
-char* iconos[] = {"X" , ">"};
+const char iconos[2][1]PROGMEM = {"X" , ">"};
 
 // Define el número de opciones del submenú
 const int numSubMenuOptions = 2;
-
-// Define los nombres de las opciones del submenú
-//String subMenuOptionNames[numSubMenuOptions] = {"Subopción 1", "Subopción 2"};
 
 // Define el índice actual en cada pantalla
 volatile int currentMainMenuIndex = 0;
 
 
-// Define el valor anterior del encoder
-volatile long lastValue = -999;
+//***************************************************************
+//******************* PROTOTIPOS DE FUNCIONES *******************
+//***************************************************************
 
-// Prototipos de funciones
-void imprimirPresentacion(const char *_valor);
+void ImprimirDisplay(const char _screen[][20]);
+void Modulos_init(void);
 void PetConv_Init(PETfilConv *_petFilConv);
 
 void showMainMenu();
@@ -192,15 +191,13 @@ void showSubMenu();
 void updateMenu();
 
 void setup() {
-  // Inicializa el display
-  lcd.init();
-  lcd.backlight();
+  Modulos_init();
 
   // Muestra pantalla presentacion
-  imprimirPresentacion(screenPresentacion[]);
+  ImprimirDisplay(screenPresentacion);
 
   // Define la interrupción externa para el encoder
-  attachInterrupt(digitalPinToInterrupt(2), updateMenu, CHANGE);
+  //attachInterrupt(digitalPinToInterrupt(2), updateMenu, CHANGE);
 }
 
 void loop()
@@ -208,25 +205,25 @@ void loop()
   // Nada que hacer aquí
 }
 
-void imprimirPresentacion(const char *_valor)
+void Modulos_init(void)
 {
+  // Inicializa el display
+  lcd.init();
+  lcd.backlight();
+}
+
+void ImprimirDisplay(const char _screen[][20])
+{
+  char sbuff[20];
+  
   // Limpia el display
   lcd.clear();
-
-  // Muestra la opción actual del menú principal en el display
-  lcd.setCursor(primer_fila, 0);
-  lcd.print(_valor[0]);
-/*  
-//  lcd.print("> ");
-  lcd.print(mainMenuOptionNames[currentMainMenuIndex]);
-
-  // Imprime el número de opciones del menú principal en la pantalla
-  lcd.setCursor(18, 0);
-  lcd.print(numMainMenuOptions);
-
-  // Define la posición del cursor en la segunda fila del display
-  lcd.setCursor(0, 1);
-*/
+  for( uint8_t i=0; i<4; i++ )
+  {
+    lcd.setCursor(0, i);
+    strcpy_P( sbuff, &_screen[i][0] );
+    lcd.print(sbuff);
+  }
 }
 
 /*

@@ -1,8 +1,27 @@
 #ifndef H_V10
 #define H_V10
 
-typedef struct PETfilConv{
+
+
+
+struct PETfilConv{
   //variables de estado
+  bool  petSensor_state;  //determina si hay o no tira PET a procesar
+  
+  //variables de sensado de temperatura
+  double tempActualExtr;    //temperatura actual
+  double tempAnteriorExtr;    //temperatura actual
+  double constTemp;
+  int corrTemp;
+
+  //variables de control PID de tempratura
+  double agrKp,agrKi,agrKd;
+  double conKp,conKi,conKd;
+
+  //variables control velocidad motor colector
+  int velMotor;
+  
+/*  
   bool  soundAlarm_state;
   bool  velCol_value;
   //variables de temp
@@ -17,6 +36,7 @@ typedef struct PETfilConv{
   float previous_error;
   float elapsedTime, time, timePrev;
   int factor_cor;
+  */
 }PETfilConv;
 
 #endif // H_V10
