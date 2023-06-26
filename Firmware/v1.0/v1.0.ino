@@ -182,6 +182,8 @@ volatile int currentMainMenuIndex = 0;
 void ImprimirDisplay(const char _screen[][20]);
 void Modulos_init(void);
 void PetConv_Init(PETfilConv *_petFilConv);
+void UpdateSensorsFilament();
+void UpdateEncoder();
 
 void showMainMenu();
 void showSubMenu();
@@ -192,9 +194,6 @@ void setup() {
 
   // Muestra pantalla presentacion
   ImprimirDisplay(screenPresentacion);
-
-  // Define la interrupción externa para el encoder
-  //attachInterrupt(digitalPinToInterrupt(2), updateMenu, CHANGE);
 }
 
 void loop()
@@ -210,26 +209,84 @@ void Modulos_init(void)
 
   //inicializa interrupciones
   pinMode(senFil_1, INPUT_PULLUP);
-  PcInt::attachInterrupt(PCINT_PIN, pinChanged, "Pin has changed to ", CHANGE);
+  PcInt::attachInterrupt(
+                          senFil_1, 
+                          UpdateSensorsFilament,
+                          CHANGE,
+                          false
+                          );
   pinMode(senFil_2, INPUT_PULLUP);
-  PcInt::attachInterrupt(PCINT_PIN, pinChanged, "Pin has changed to ", CHANGE);
+  PcInt::attachInterrupt(senFil_2, UpdateSensorsFilament);
   pinMode(senFil_3, INPUT_PULLUP);
-  PcInt::attachInterrupt(PCINT_PIN, pinChanged, "Pin has changed to ", CHANGE);
+  PcInt::attachInterrupt(senFil_3, UpdateSensorsFilament);
   pinMode(senFil_4, INPUT_PULLUP);
-  PcInt::attachInterrupt(PCINT_PIN, pinChanged, "Pin has changed to ", CHANGE);
+  PcInt::attachInterrupt(senFil_4, UpdateSensorsFilament);
   pinMode(senFil_5, INPUT_PULLUP);
-  PcInt::attachInterrupt(PCINT_PIN, pinChanged, "Pin has changed to ", CHANGE);
+  PcInt::attachInterrupt(senFil_5, UpdateSensorsFilament);
   pinMode(senFil_6, INPUT_PULLUP);
-  PcInt::attachInterrupt(PCINT_PIN, pinChanged, "Pin has changed to ", CHANGE);
+  PcInt::attachInterrupt(senFil_6, UpdateSensorsFilament);
   pinMode(senFil_7, INPUT_PULLUP);
-  PcInt::attachInterrupt(PCINT_PIN, pinChanged, "Pin has changed to ", CHANGE);
+  PcInt::attachInterrupt(senFil_7, UpdateSensorsFilament);
   pinMode(pin_DT, INPUT_PULLUP);
-  PcInt::attachInterrupt(PCINT_PIN, pinChanged, "Pin has changed to ", CHANGE);
+  PcInt::attachInterrupt(pin_DT, UpdateEncoderCCW);
   pinMode(pin_CLK, INPUT_PULLUP);
-  PcInt::attachInterrupt(PCINT_PIN, pinChanged, "Pin has changed to ", CHANGE);
+  PcInt::attachInterrupt(pin_CLK, UpdateEncoderCW);
   pinMode(pin_SW, INPUT_PULLUP);
-  PcInt::attachInterrupt(PCINT_PIN, pinChanged, "Pin has changed to ", CHANGE);
+  PcInt::attachInterrupt(pin_SW, UpdateEncoderSW);
+  
   //inicializa resto de los pines
+  pinMode(buzzer, OUTPUT);
+  pinMode(ext1_pwm, OUTPUT);
+  pinMode(ext2_pwm, OUTPUT);
+  pinMode(ext3_pwm, OUTPUT);
+  pinMode(ext4_pwm, OUTPUT);
+  pinMode(ext5_pwm, OUTPUT);
+  pinMode(ext6_pwm, OUTPUT);
+  pinMode(ext7_pwm, OUTPUT);
+}
+
+void UpdateSensorsFilament()
+{
+
+    
+
+}
+
+void UpdateEncoderCW()
+{
+  static int previousTick;
+  int currentTick = millis();
+  
+  if(currentTick - previousTick > 300)
+  {
+    if(digitalRead(pin_DT) == digitalRead(pin_CLK)) g_btnPressed = Right;
+    else g_btnPressed = Left;
+  }
+  previousTick = millis();
+}
+
+void UpdateEncoderCCW()
+{
+  static int previousTick;
+  int currentTick = millis();
+  
+  if(currentTick - previousTick > 300)
+  {
+    if(digitalRead(pin_DT) != digitalRead(pin_CLK)) g_btnPressed = Right;
+    else g_btnPressed = Left;
+  }
+  
+  previousTick = millis();
+}
+
+void UpdateEncoderSW()
+{
+  g_btnPressed = Ok;
+}
+
+void UpdateGUI()
+{
+
 }
 
 void ImprimirDisplay(const char _screen[][20])
