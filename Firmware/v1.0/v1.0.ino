@@ -1,6 +1,6 @@
 #include <Wire.h>               //manejo protocolo I2C
 #include <LiquidCrystal_I2C.h>  //manejo display LCD
-#include <Encoder.h>            //manejo de encoder rotativo KY-040
+#include <YetAnotherPcInt.h>
 #include "gui.h"
 #include "temperatureControl.h"
 #include "PETalarms.h"
@@ -15,10 +15,7 @@
 LiquidCrystal_I2C lcd(0x3F, 20, 4);
 
 //Conexiones del encoder
-Encoder myEncoder(2, 3);
 int g_btnPressed;   //guarda estado del encoder
-// Define el valor anterior del encoder
-volatile long lastValue = -999;
 
 //Rotative Encoder constants
 #define NoPressed   0
@@ -73,23 +70,23 @@ const char screenPresentacion[4][20] PROGMEM = {
 
                           
 const char screenPagPpal_1[4][20]PROGMEM = {
-                          "Ext1:     Col1:     ",
-                          "Ext2:     Col2:     ",
-                          "Ext3:     Col3:     ",
+                          "Ext1:         Col1: ",
+                          "Ext2:         Col2: ",
+                          "Ext3:         Col3: ",
                           "Alarma sonora:      ",
                           };
 
 const char screenPagPpal_2[4][20]PROGMEM = {
-                          "Ext4:     Col4:     ",
-                          "Ext5:     Col5:     ",
-                          "Ext6:     Col6:     ",
+                          "Ext4:         Col4: ",
+                          "Ext5:         Col5: ",
+                          "Ext6:         Col6: ",
                           "Alarma sonora:      ",
                           };
 
 const char screenPagPpal_3[4][20]PROGMEM = {
-                          "Ext7:     Col7:     ",
-                          "Ext8:     Col8:     ",
-                          "Ext9:     Col9:     ",
+                          "Ext7:         Col7: ",
+                          "                    ",
+                          "                    ",
                           "Alarma sonora:      ",
                           };
 
@@ -124,8 +121,8 @@ const char screenPagConfMenuExt_2[4][20]PROGMEM = {
 const char screenPagConfMenuExt_3[4][20]PROGMEM = {
                                   "Volver...           ",
                                   "Extrusor 7          ",
-                                  "Extrusor 8          ",
-                                  "Extrusor 9          ",
+                                  "                    ",
+                                  "                    ",
                                   };
 
 const char screenPagConfSubMenuExt_1[4][20] = {
@@ -159,8 +156,8 @@ const char screenPagConfMenuCol_2[4][20]PROGMEM = {
 const char screenPagConfMenuCol_3[4][20]PROGMEM = {
                                   "Volver...           ",
                                   "Colector 7          ",
-                                  "Colector 8          ",
-                                  "Colector 9          ",
+                                  "                    ",
+                                  "                    ",
                                   };
 
 const char screenPagCreditos[4][20]PROGMEM = {
@@ -210,6 +207,29 @@ void Modulos_init(void)
   // Inicializa el display
   lcd.init();
   lcd.backlight();
+
+  //inicializa interrupciones
+  pinMode(senFil_1, INPUT_PULLUP);
+  PcInt::attachInterrupt(PCINT_PIN, pinChanged, "Pin has changed to ", CHANGE);
+  pinMode(senFil_2, INPUT_PULLUP);
+  PcInt::attachInterrupt(PCINT_PIN, pinChanged, "Pin has changed to ", CHANGE);
+  pinMode(senFil_3, INPUT_PULLUP);
+  PcInt::attachInterrupt(PCINT_PIN, pinChanged, "Pin has changed to ", CHANGE);
+  pinMode(senFil_4, INPUT_PULLUP);
+  PcInt::attachInterrupt(PCINT_PIN, pinChanged, "Pin has changed to ", CHANGE);
+  pinMode(senFil_5, INPUT_PULLUP);
+  PcInt::attachInterrupt(PCINT_PIN, pinChanged, "Pin has changed to ", CHANGE);
+  pinMode(senFil_6, INPUT_PULLUP);
+  PcInt::attachInterrupt(PCINT_PIN, pinChanged, "Pin has changed to ", CHANGE);
+  pinMode(senFil_7, INPUT_PULLUP);
+  PcInt::attachInterrupt(PCINT_PIN, pinChanged, "Pin has changed to ", CHANGE);
+  pinMode(pin_DT, INPUT_PULLUP);
+  PcInt::attachInterrupt(PCINT_PIN, pinChanged, "Pin has changed to ", CHANGE);
+  pinMode(pin_CLK, INPUT_PULLUP);
+  PcInt::attachInterrupt(PCINT_PIN, pinChanged, "Pin has changed to ", CHANGE);
+  pinMode(pin_SW, INPUT_PULLUP);
+  PcInt::attachInterrupt(PCINT_PIN, pinChanged, "Pin has changed to ", CHANGE);
+  //inicializa resto de los pines
 }
 
 void ImprimirDisplay(const char _screen[][20])
