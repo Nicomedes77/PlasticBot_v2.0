@@ -46,7 +46,7 @@
 #define col7_pwm  46            //PIN = D46
 
 
-struct PETfilConv{
+ typedef struct{
   //variables de estado
   bool  petSensor_state;  //determina si hay o no tira PET a procesar
   
