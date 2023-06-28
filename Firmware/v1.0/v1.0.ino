@@ -24,55 +24,49 @@ int g_btnPressed;   //guarda estado del encoder
 #define Right       3
 
 //numeracion de pantallas
-#define pagPpal_part1                     1
-#define pagPpal_part2                     2
-#define pagPpal_part3                     3
-#define pagConfMenuPpal_part1             4
-#define pagConfMenuPpal_part2             5
-#define pagConfMenuExt_part1              6
-#define pagConfMenuExt_part2              7
-#define pagConfMenuExt_part3              8
-#define pagConfSubMenuExt                 9
-#define pagConfSubMenuExtTemp            10
-#define pagConfMenuCol_part1             11
-#define pagConfMenuCol_part2             12
-#define pagConfMenuCol_part3             13
-#define pagCreditos_part1                14
-#define pagCreditos_part2                15
-
-//cantidad de paginas por pantalla
-#define nPagPpal                  3
-#define nPagConfMenuPpal          2
-#define nPagConfMenuExt           3
-#define nPagConfSubMenuExt        1
-#define nPagConfSubMenuExtTemp    1
-#define nPagConfMenuCol           3
-#define nPagCreditos              1
-
-int pantallaActual = pagConfMenuPpal_part1; //Al iniciar el equipo, luego de la presentación, muestra en pantalla la 1er parte del menu de configuración
-
-//numero de paginas por pantalla
-const int nPagDisplay[7] = {nPagPpal,                 //menú principal
-                            nPagConfMenuPpal,         //menu de configuración principal
-                            nPagConfMenuExt,          //menu de configuración extrusores
-                            nPagConfSubMenuExt,       //menu de configuración colectores
-                            nPagConfSubMenuExtTemp,   //menu de configuración temperatura en extrusores
-                            nPagConfMenuCol,          //menu de configuración colectores
-                            nPagCreditos              //créditos
-                            };
+#define pagPpal_part1             1
+#define pagPpal_part2             2
+#define pagPpal_part3             3
+#define pagConfMenuPpal_part1     4
+#define pagConfMenuPpal_part2     5
+#define pagConfMenuExt_part1      6
+#define pagConfMenuExt_part2      7
+#define pagConfMenuExt_part3      8
+#define pagConfSubMenuExt         9
+#define pagConfSubMenuExtTemp     10
+#define pagConfMenuCol_part1      11
+#define pagConfMenuCol_part2      12
+#define pagConfMenuCol_part3      13
+#define pagCreditos_part1         14
+#define pagCreditos_part2         15
 
 //cantidad de items por pantalla
-#define itemPagPpal                 3                                
-#define itemPagConfMenuPpal         5
-#define itemPagConfMenuExt          12 
-#define itemPagConfSubMenuExt       4 
-//#define itemPagConfSubMenuExtTemp    
-#define itemPagConfMenuCol          12 
-//#define itemPagCreditos              
+#define cantItemsPagPpal               3
+#define cantItemsConfMenuPpal          5
+#define cantItemsConfMenuExt           7
+#define cantItemsConfSubMenuExt        4
+//#define cantItemsConfSubMenuExtTemp   
+#define cantItemsConfMenuCol           7
+#define cantItemsCreditos              2
 
-// Define los nombres de las opciones del menú principal
-//String mainMenuOptionNames[numMainMenuOptions] = {"Opción 1", "Opción 2", "Opción 3"};
+#define indicePagPpal         0
+#define indiceConfMenuPpal    1
+#define indiceConfMenuExt     2
+#define indiceConfSubMenuExt  3
+#define indiceConfMenuCol     4
+#define indiceCreditos        5
 
+//numero de item por pantalla
+ int indices[6] = {0, //indicePpal -> menú principal
+                   0, //indiceConfMenuPpal -> menu de configuración principal
+                   0, //indiceConfMenuExt -> menu de configuración extrusores
+                   0, //indiceConfSubMenuExt -> menu de configuración colectores
+                   0, //indiceConfMenuCol -> menu de configuración colectores
+                   0  //indiceCreditos -> créditos
+                   };            
+
+//Al iniciar el equipo, luego de la presentación, muestra en pantalla la 1er parte del menu de configuración
+int pantallaActual = pagConfMenuPpal_part1;
 
 const char screenPresentacion[4][21] PROGMEM = {
                              "      Proyecto      ",
@@ -80,7 +74,6 @@ const char screenPresentacion[4][21] PROGMEM = {
                              "        v2.0        ",
                              "                    ",
                             };
-
                           
 const char screenPagPpal_1[4][21]PROGMEM = {
                           "Ext1:         Col1: ",
@@ -307,6 +300,13 @@ void UpdateEncoderSW()
 #define pagConfMenuCol_part3             13
 #define pagCreditos_part1                14
 #define pagCreditos_part2                15
+
+#define indicePagPpal         0
+#define indiceConfMenuPpal    1
+#define indiceConfMenuExt     2
+#define indiceConfSubMenuExt  3
+#define indiceConfMenuCol     4
+#define indiceCreditos        5
 */
 void updateDataGUI(uint32_t *_indexes , uint32_t *_btn , PETfilConv *_petFilConv , uint32_t *_currentScreen , uint32_t *_vel_col)
 //void updateDataGUI()
@@ -314,6 +314,202 @@ void updateDataGUI(uint32_t *_indexes , uint32_t *_btn , PETfilConv *_petFilConv
   if(*_btn != NoPressed)  //si movieron el encoder
   {
       if(*_btn == Ok)   //presionaron encoder
+      {
+        switch(*_currentScreen)
+        {
+          case pagPpal_part1: //pantalla de trabajo
+            *_currentScreen = pagConfMenuPpal_part1;
+            _indexes[indiceConfMenuPpal] = 0;
+          break;
+          /****************/
+          case pagPpal_part2: //pantalla de trabajo
+            *_currentScreen = pagConfMenuPpal_part1;
+            _indexes[indiceConfMenuPpal] = 0;
+          break;
+          /****************/
+          case pagPpal_part3: //pantalla de trabajo
+            *_currentScreen = pagConfMenuPpal_part1;
+            _indexes[indiceConfMenuPpal] = 0;
+          break;
+          /****************/
+          case pagConfMenuPpal_part1: //menu principal (parte 1)
+            if(_indexes[indiceConfMenuPpal] == 0) *_currentScreen = pagPpal_part1;
+            else if(_indexes[indiceConfMenuPpal] == 1) *_currentScreen = pagConfMenuExt_part1;
+            else if(_indexes[indiceConfMenuPpal] == 2) *_currentScreen = pagConfMenuCol_part1;
+            else if(_indexes[indiceConfMenuPpal] == 3) //ACTIVA/DESACTIVA ALARMA
+          break;
+          /****************/
+          case pagConfMenuPpal_part2: //menu principal (parte 2)
+            if(_indexes[indiceConfMenuPpal] == 4) *_currentScreen = pagCreditos_part1;
+          break;
+          /****************/          
+          case pagConfMenuExt_part1: //menu EXTRUSORES (parte 1)
+            if(_indexes[indiceConfMenuExt] == 0) *_currentScreen = pagPpal_part1;
+            else if (_indexes[indiceConfMenuExt] == 1) *_currentScreen = pagConfSubMenuExtTemp;
+            else if (_indexes[indiceConfMenuExt] == 2) *_currentScreen = pagConfSubMenuExtTemp;
+            else if (_indexes[indiceConfMenuExt] == 3) *_currentScreen = pagConfSubMenuExtTemp;            
+          break;
+          /****************/
+          case pagConfMenuExt_part2: //menu EXTRUSORES (parte 2)
+            if(_indexes[indiceConfMenuExt] == 4) *_currentScreen = pagPpal_part1;
+            else if (_indexes[indiceConfMenuExt] == 5) *_currentScreen = pagConfSubMenuExtTemp;
+            else if (_indexes[indiceConfMenuExt] == 6) *_currentScreen = pagConfSubMenuExtTemp;
+            else if (_indexes[indiceConfMenuExt] == 7) *_currentScreen = pagConfSubMenuExtTemp;
+          break;
+          /****************/ 
+          case pagConfMenuExt_part3: //menu EXTRUSORES (parte 3)
+            if(_indexes[indiceConfMenuExt] == 8) *_currentScreen = pagPpal_part1;
+            else if (_indexes[indiceConfMenuExt] == 9) *_currentScreen = pagConfSubMenuExtTemp;
+          break;
+          /****************/
+          case pagConfSubMenuExtTemp:  //sub menu EXTRUSORES configuracion Tª de trabajo
+//          
+            if((_indexes[indiceConfMenuExt] == 1) || 
+               (_indexes[indiceConfMenuExt] == 2) || 
+               (_indexes[indiceConfMenuExt] == 3)
+               ) *_currentScreen = pagConfMenuExt_part1;
+//
+            else if((_indexes[indiceConfMenuExt] == 5) || 
+                    (_indexes[indiceConfMenuExt] == 6) || 
+                    (_indexes[indiceConfMenuExt] == 7)
+                    ) *_currentScreen = pagConfMenuExt_part2;
+            }
+//            
+            else if(_indexes[indiceConfMenuExt] == 9) *_currentScreen = pagConfMenuExt_part3;
+            }
+          break;
+          /****************/
+          case pagConfMenuCol_part1:  //menu COLECTORES (parte 1)
+            if(_indexes[indiceConfMenuCol] == 0) *_currentScreen = pagPpal_part1;
+            else if((_indexes[indiceConfMenuCol] == 1) ||
+                    (_indexes[indiceConfMenuCol] == 2) ||
+                    (_indexes[indiceConfMenuCol] == 3)
+                    ) *_currentScreen = pagConfMenuCol_part1;                  
+          break;
+          /****************/
+          case pagConfMenuCol_part2:  //menu COLECTORES (parte 2)
+            if(_indexes[indiceConfMenuCol] == 4) *_currentScreen = pagPpal_part1;
+            else if((_indexes[indiceConfMenuCol] == 5) ||
+                    (_indexes[indiceConfMenuCol] == 6) ||
+                    (_indexes[indiceConfMenuCol] == 7)
+                    ) *_currentScreen = pagConfMenuCol_part2;
+          break;
+          /****************/
+          case pagConfMenuCol_part3:  //menu COLECTORES (parte 3)
+            if(_indexes[indiceConfMenuCol] == 8) *_currentScreen = pagPpal_part1;
+            else if(_indexes[indiceConfMenuCol] == 9) *_currentScreen = pagConfMenuCol_part3;
+          break;
+          /****************/
+          case pagCreditos_part1: //menu CREDITOS (parte 1)
+            *_currentScreen = pagPpal_part2;
+          break;
+          /****************/
+          case pagCreditos_part1: //menu CREDITOS (parte 2)
+            *_currentScreen = pagPpal_part2;
+          break;
+          /****************/
+          default: break;
+        }
+      }
+/*
+#define indicePagPpal         0
+#define indiceConfMenuPpal    1
+#define indiceConfMenuExt     2
+#define indiceConfSubMenuExt  3
+#define indiceConfMenuCol     4
+#define indiceCreditos        5
+*/
+      else if(*_btn == Left) //rotaron encoder a izq
+      {
+        switch(*_currentScreen)
+        {
+          case pagPpal_part1: //pantalla de trabajo
+            *_currentScreen = pagPpal_part1;
+            if(_indexes[indicePagPpal] == 0)  _indexes[indicePagPpal] = 0;  //decrementa le n° de indice
+          break;
+          /****************/
+          case pagPpal_part2: //pantalla de trabajo
+            if(_indexes[indicePagPpal] == 1)  *_currentScreen = pagPpal_part1;
+            _indexes[indicePagPpal]--;  //decrementa le n° de indice 
+          break;
+          /****************/
+          case pagPpal_part3: //pantalla de trabajo
+            if(_indexes[indicePagPpal] == 2)  *_currentScreen = pagPpal_part2;
+            _indexes[indicePagPpal]--;  //decrementa le n° de indice 
+            break;
+          /****************/
+          case pagConfMenuPpal_part1: //menu principal (parte 1)
+            *_currentScreen = pagConfMenuPpal_part1;
+            if(_indexes[indiceConfMenuPpal] == 0)  _indexes[indiceConfMenuPpal] = 0;  //decrementa le n° de indice
+            else  _indexes[indiceConfMenuPpal]--;  //decrementa le n° de indice
+          break;
+          /****************/
+          case pagConfMenuPpal_part2: //menu principal (parte 2)
+            if(_indexes[indiceConfMenuPpal] == 4) *_currentScreen = pagConfMenuPpal_part1;
+            else *_currentScreen = pagConfMenuPpal_part2;
+            _indexes[indiceConfMenuPpal]--;  //decrementa le n° de indice                        
+          break;
+          /****************/          
+          case pagConfMenuExt_part1: //menu EXTRUSORES (parte 1)
+            if(_indexes[indiceConfMenuExt] == 0) _indexes[indiceConfMenuExt] = 0;
+            else _indexes[indiceConfMenuExt]--;  //decrementa le n° de indice
+          break;
+          /****************/
+          case pagConfMenuExt_part2: //menu EXTRUSORES (parte 2)
+            if(_indexes[indiceConfMenuExt] == 4) *_currentScreen = pagConfMenuExt_part1;
+            else *_currentScreen = pagConfMenuExt_part2;
+            _indexes[indiceConfMenuPpal]--;  //decrementa le n° de indice  
+          break;
+          /****************/ 
+          case pagConfMenuExt_part3: //menu EXTRUSORES (parte 3)
+            if(_indexes[indiceConfMenuExt] == 8) *_currentScreen = pagConfMenuExt_part2;
+            else *_currentScreen = pagConfMenuExt_part3;
+            _indexes[indiceConfMenuPpal]--;  //decrementa le n° de indice 
+          break;
+          /****************/                   
+          case pagConfSubMenuExt:  //sub menu EXTRUSORES
+            if(_indexes[cont_item_SubMenuColectores] == 0) _indexes[cont_item_SubMenuColectores] = 0;
+            else _indexes[cont_item_SubMenuColectores]--;
+          break;
+          /****************/
+          case pagConfSubMenuExtTemp:  //sub menu EXTRUSORES confugracion Tª de trabajo
+          //baja temp del extrusor
+          //actualiza pantalla con valor de temp nueva
+          break;
+          /****************/
+          case pagConfMenuCol_part1:  //menu COLECTORES (parte 1)
+            if(_indexes[indiceConfMenuCol] == 0) _indexes[indiceConfMenuCol] = 0;
+            else _indexes[indiceConfMenuCol]--;  //decrementa le n° de indice
+          break;
+          /****************/
+          case pagConfMenuCol_part2:  //menu COLECTORES (parte 2)
+            if(_indexes[indiceConfMenuCol] == 0) _indexes[indiceConfMenuCol] = 0;
+            else _indexes[indiceConfMenuCol]--;  //decrementa le n° de indice
+          break;
+          /****************/
+          case pagConfMenuCol_part3:  //menu COLECTORES (parte 3)
+            if(_indexes[indiceCreditos] == 0) _indexes[indiceCreditos] = 0;
+            else _indexes[indiceCreditos]--;  //decrementa le n° de indice
+          break;
+          /****************/          
+          case pagCreditos_part1:  //menu CREDITOS (parte 1)
+            if(_indexes[indiceCreditos] == 0) _indexes[indiceCreditos] = 0;
+          break;
+          /****************/
+          case pagCreditos_part2:  //menu CREDITOS (parte 2)
+            if(_indexes[indiceCreditos] == 1)
+            {
+              _indexes[indiceCreditos] = 0;
+              *_currentScreen = pagCreditos_part1;
+            } 
+          break;
+          /****************/
+          default: break;
+        }
+      }
+
+//TODO
+      else if (*_btn == Right)  //rotaron encoder a der
       {
         switch(*_currentScreen)
         {
@@ -447,114 +643,6 @@ void updateDataGUI(uint32_t *_indexes , uint32_t *_btn , PETfilConv *_petFilConv
           /****************/
           default: break;
         }
-      }
-
-      else if(*_btn == Left) //rotaron encoder a izq
-      {
-          switch(*_currentScreen)
-          {
-            case pantallaWorkingScreen: //pantalla de trabajo
-              //NADA
-            break;
-
-            case pantallaMainMenu_part1:
-              if(_indexes[cont_item_PrinMenu] == 0) _indexes[cont_item_PrinMenu] = 0;
-              else  _indexes[cont_item_PrinMenu]--;
-            break;
-
-            case pantallaMainMenu_part2:
-              if(_indexes[cont_item_PrinMenu] <= 4)
-              {
-                *_currentScreen = pantallaMainMenu_part1;
-                _indexes[cont_item_PrinMenu] = 3;
-              }
-              else  _indexes[cont_item_PrinMenu]--;
-            break;
-
-            case pantallaSubMenuSelVelocidadColFil:
-              if(_indexes[cont_item_SubMenuSelVelCol] == 0) _indexes[cont_item_SubMenuSelVelCol] = 0;
-              else  _indexes[cont_item_SubMenuSelVelCol]--;
-            break;
-
-            case pantallaSubMenuAcercaDe_part2: *_currentScreen = pantallaSubMenuAcercaDe_part1;
-            break;
-
-            case pantallaSubmenuSetTempExt:
-
-
-            //  if(_petFilConv -> setExtTemp == 0)  _petFilConv -> setExtTemp = 0;
-            //  else _petFilConv -> setExtTemp--;
-              if(_petFilConv -> previousSetExtTemp == 0) _petFilConv -> previousSetExtTemp = 0;
-              else _petFilConv -> previousSetExtTemp--;
-            break;
-
-            default:
-              if(_indexes[*_currentScreen] == 0) _indexes[*_currentScreen] = 0;
-              else _indexes[*_currentScreen]--;
-          }
-      }
-
-
-      else if (*_btn == Right)  //rotaron encoder a der
-      {
-          switch(*_currentScreen)
-          {
-            case pantallaWorkingScreen: //pantalla de trabajo
-              //NADA
-            break;
-
-            case pantallaMainMenu_part1:
-              if(_indexes[cont_item_PrinMenu] >= 3)
-              {
-                *__currentScreen = pantallaMainMenu_part2;
-                _indexes[cont_item_PrinMenu] = 4;
-              }
-              else  _indexes[cont_item_PrinMenu]++;
-            break;
-
-            case pantallaMainMenu_part2:
-              if(_indexes[cont_item_PrinMenu] >= 5) _indexes[cont_item_PrinMenu] = 5;
-              else  _indexes[cont_item_PrinMenu]++;
-            break;
-
-            case pantallaSubMenuExtrusores:
-              if(_indexes[*_currentScreen] == (cantItemsSubMenuExtrusores - 1)) _indexes[*_currentScreen] = cantItemsSubMenuExtrusores - 1;
-              else _indexes[*_currentScreen]++;
-            break;
-
-            case pantallaSubMenuColectoresFil:
-              if(_indexes[*_currentScreen] == (cantItemsSubMenuColectores - 1)) _indexes[*_currentScreen] = cantItemsSubMenuColectores - 1;
-              else _indexes[*_currentScreen]++;
-            break;
-
-            case pantallaSubMenuSelVelocidadColFil:
-              if(_indexes[cont_item_SubMenuSelVelCol] >= 3) _indexes[cont_item_PrinMenu] = 3;
-              else  _indexes[cont_item_SubMenuSelVelCol]++;
-            break;
-
-            case pantallaSubMenuAlarmas:
-              if(_indexes[*_currentScreen] == (cantItemsSubMenuAlarmas - 1)) _indexes[*_currentScreen] = cantItemsSubMenuAlarmas - 1;
-              else _indexes[*_currentScreen]++;
-            break;
-
-            case pantallaSubMenuHistorial:
-              if(_indexes[*_currentScreen] == (cantItemsSubMenuHistorial - 1)) _indexes[*_currentScreen] = cantItemsSubMenuHistorial - 1;
-              else _indexes[*_currentScreen]++;
-            break;
-
-            case pantallaSubMenuAcercaDe_part1: *_currentScreen = pantallaSubMenuAcercaDe_part2;
-            break;
-
-            case pantallaSubmenuSetTempExt: //menu seteo de temperatura COLECTORES
-
-              //if(_petFilConv -> setExtTemp == 250) _petFilConv -> setExtTemp = 250;
-              //else _petFilConv -> setExtTemp++; //Temp++
-              if(_petFilConv -> previousSetExtTemp == 250) _petFilConv -> previousSetExtTemp = 250;
-              else _petFilConv -> previousSetExtTemp++; //Temp++
-            break;
-
-            default: break;
-          }
       }
   }
 }
