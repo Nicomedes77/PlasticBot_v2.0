@@ -12,7 +12,8 @@
 //***************************************************************
 
 //Conexiones del display
-LiquidCrystal_I2C lcd(0x3F, 20, 4);
+//LiquidCrystal_I2C lcd(0x3F, 20, 4);
+LiquidCrystal_I2C lcd(0x3F, 16, 2);
 
 //Conexiones del encoder
 int g_btnPressed;   //guarda estado del encoder
@@ -199,6 +200,9 @@ void loop()
 
 void Modulos_init(void)
 {
+  //inicializa monitor serie
+  Serial.begin(9600);
+  
   // Inicializa el display
   lcd.init();
   lcd.backlight();
@@ -257,8 +261,16 @@ void UpdateEncoderCW()
   
   if(currentTick - previousTick > 300)
   {
-    if(digitalRead(pin_DT) == digitalRead(pin_CLK)) g_btnPressed = Right;
-    else g_btnPressed = Left;
+    if(digitalRead(pin_DT) == digitalRead(pin_CLK))
+    {
+      g_btnPressed = Right;
+      Serial.println("RIGHT");
+    }
+    else
+    {
+      g_btnPressed = Left;
+      Serial.println("LEFT");
+    }
   }
   previousTick = millis();
 }
@@ -270,8 +282,16 @@ void UpdateEncoderCCW()
   
   if(currentTick - previousTick > 300)
   {
-    if(digitalRead(pin_DT) != digitalRead(pin_CLK)) g_btnPressed = Right;
-    else g_btnPressed = Left;
+    if(digitalRead(pin_DT) != digitalRead(pin_CLK))
+    {
+      g_btnPressed = Right;
+      Serial.println("RIGHT");
+    }
+    else
+    {
+      g_btnPressed = Left;
+      Serial.println("LEFT");
+    }
   }
   
   previousTick = millis();
@@ -280,6 +300,7 @@ void UpdateEncoderCCW()
 void UpdateEncoderSW()
 {
   g_btnPressed = Ok;
+  Serial.println("CLICK");
 }
 /*
 #define pagPpal_part1                     1
