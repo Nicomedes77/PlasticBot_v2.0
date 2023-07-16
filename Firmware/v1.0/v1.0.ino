@@ -12,8 +12,7 @@
 //***************************************************************
 
 //Conexiones del display
-//LiquidCrystal_I2C lcd(0x3F, 20, 4);
-LiquidCrystal_I2C lcd(0x3F, 16, 2);
+LiquidCrystal_I2C lcd(0x27, 20, 4);
 
 //Conexiones del encoder
 int g_btnPressed;   //guarda estado del encoder
@@ -608,7 +607,6 @@ void updateDataGUI(uint8_t *_indexes , uint8_t *_btn , uint32_t *_currentScreen)
 void ImprimirDisplay(const char _screen[][21])
 {
   char sbuff[21];
-  
   // Limpia el display
   lcd.clear();
   for( uint8_t i=0; i<4; i++ )
