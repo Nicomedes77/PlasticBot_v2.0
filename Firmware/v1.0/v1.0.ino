@@ -179,6 +179,7 @@ const char iconos[2][2]PROGMEM = {"X" , ">"};
 //***************************************************************
 
 void ImprimirDisplay(const char _screen[][21]);
+void UpdateCursor(void);
 void Modulos_init(void);
 void PetConv_Init(PETfilConv *_petFilConv);
 void UpdateSensorsFilament();
@@ -187,9 +188,9 @@ void updateDataGUI(uint8_t *_indexes , uint8_t *_btn , uint32_t *_currentScreen)
 
 void setup() {
   Modulos_init();
-
-  // Muestra pantalla presentacion
-  ImprimirDisplay(screenPresentacion);
+  ImprimirDisplay(screenPresentacion);    // Muestra pantalla presentacion
+  delay(3000);
+  ImprimirDisplay(screenPagConfMenuPpal_1);    // Muestra pantalla presentacion
 }
 
 void loop()
@@ -229,11 +230,11 @@ void Modulos_init(void)
   PcInt::attachInterrupt(senFil_7, UpdateSensorsFilament);
 */
   pinMode(pin_DT, INPUT_PULLUP);
-  PcInt::attachInterrupt(pin_DT, UpdateEncoderCCW);
-  pinMode(pin_CLK, INPUT_PULLUP);
-  PcInt::attachInterrupt(pin_CLK, UpdateEncoderCW);
+  PcInt::attachInterrupt(pin_DT , UpdateEncoder , CHANGE);
+  //pinMode(pin_CLK, INPUT_PULLUP);
+  //PcInt::attachInterrupt(pin_CLK , UpdateEncoderCCW , CHANGE);
   pinMode(pin_SW, INPUT_PULLUP);
-  PcInt::attachInterrupt(pin_SW, UpdateEncoderSW);
+  PcInt::attachInterrupt(pin_SW , UpdateEncoderSW , RISING);
   
   //inicializa resto de los pines
   pinMode(buzzer, OUTPUT);
@@ -246,6 +247,11 @@ void Modulos_init(void)
   pinMode(ext7_pwm, OUTPUT);
 }
 
+void UpdateCursor(void)
+{
+}
+
+
 void UpdateSensorsFilament()
 {
 
@@ -253,7 +259,7 @@ void UpdateSensorsFilament()
 
 }
 
-void UpdateEncoderCW()
+void UpdateEncoder()
 {
   static int previousTick;
   int currentTick = millis();
@@ -265,15 +271,17 @@ void UpdateEncoderCW()
       g_btnPressed = Right;
       Serial.println("RIGHT");
     }
+    
     else
     {
       g_btnPressed = Left;
       Serial.println("LEFT");
     }
+    
   }
   previousTick = millis();
 }
-
+/*
 void UpdateEncoderCCW()
 {
   static int previousTick;
@@ -295,7 +303,7 @@ void UpdateEncoderCCW()
   
   previousTick = millis();
 }
-
+*/
 void UpdateEncoderSW()
 {
   g_btnPressed = Ok;
