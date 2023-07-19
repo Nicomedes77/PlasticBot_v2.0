@@ -183,6 +183,7 @@ void PetConv_Init(PETfilConv *_petFilConv);
 void UpdateEncoder();
 void UpdateDataGUI(uint8_t *_indexes , uint8_t *_btn , uint8_t *_currentScreen);
 void UpdateCursor(uint8_t *_indexes , uint8_t *_currentScreen);
+void UpdateLCD(uint8_t *_currentScreen);
 
 void setup() 
 {
@@ -190,7 +191,8 @@ void setup()
   ImprimirDisplay(screenPresentacion);    // Muestra pantalla presentacion
   delay(1000);
   ImprimirDisplay(screenPagConfMenuPpal_1);    // Muestra pantalla presentacion
-  UpdateCursor(indices[indiceConfMenuPpal]);
+  UpdateLCD(&pantallaActual);
+  UpdateCursor(indices , &pantallaActual);
 }
 
 void loop()
@@ -254,6 +256,88 @@ void Modulos_init(void)
   pinMode(ext7_pwm, OUTPUT);
 }
 
+void UpdateLCD(uint8_t *_currentScreen)
+{
+/*
+#define pagPpal_part1                     1
+#define pagPpal_part2                     2
+#define pagPpal_part3                     3
+#define pagConfMenuPpal_part1             4
+#define pagConfMenuPpal_part2             5
+#define pagConfMenuExt_part1              6
+#define pagConfMenuExt_part2              7
+#define pagConfMenuExt_part3              8
+#define pagConfSubMenuExt                 9
+#define pagConfSubMenuExtTemp            10
+#define pagConfMenuCol_part1             11
+#define pagConfMenuCol_part2             12
+#define pagConfMenuCol_part3             13
+#define pagCreditos_part1                14
+#define pagCreditos_part2                15
+*/
+  static uint8_t previousScreen;
+
+  if(*_currentScreen != previousScreen) //si la pantalla actual es distinto a la anterior o si la pantalla actual es la de seteo de temp de extrusor
+  {
+    previousScreen = *_currentScreen;
+
+    switch(*_currentScreen)
+    {
+      case pagPpal_part1: PrintScreenWorking_1();
+      break;
+
+      case pagPpal_part2: PrintScreenWorking_2();
+      break;
+
+      case pagPpal_part3: PrintScreenWorking_3();
+      break;
+
+      case pagConfMenuPpal_part1: PrintScreen(subMenuExtrusores);
+      break;
+
+      case pagConfMenuPpal_part2: PrintScreen(subMenuColectores);
+      break;
+
+      case pagConfMenuExt_part1: PrintScreen(subMenuAlarmas);
+      break;
+
+      case pagConfMenuExt_part2: PrintScreen(subMenuHistorial);
+      break;
+
+      case pagConfMenuExt_part3: PrintScreen(subMenuAcercaDe1);
+      break;
+
+      case pagConfSubMenuExt: PrintScreen(subMenuAcercaDe2);
+      break;
+
+      case pagConfSubMenuExtTemp: PrintScreenSettingTemp(_petFilConv);
+      break;
+
+      case pagConfMenuCol_part1: PrintScreen(subMenuSelVelocidadColec);
+      break;
+
+      case pagConfMenuCol_part2: PrintScreen(subMenuSelVelocidadColec);
+      break;
+
+      case pagConfMenuCol_part3: PrintScreen(subMenuSelVelocidadColec);
+      break;
+
+      case pagCreditos_part1: PrintScreen(subMenuSelVelocidadColec);
+      break;    
+
+      case pagCreditos_part2: PrintScreen(subMenuSelVelocidadColec);
+      break;  
+      default: break;
+    }
+  }
+/*
+  if((_petFilConv -> previousSetExtTemp != _petFilConv -> setExtTemp) && (*currentScreen == pantallaSubmenuSetTempExt))
+  {
+    printSettingTemp(_petFilConv);
+  }
+*/
+}
+
 void CleanAllCursors(void)
 {
   // Limpia el cursor de todos las lineas
@@ -264,7 +348,51 @@ void CleanAllCursors(void)
   }
 }
 
-void UpdateCursor(uint8_t *_indexes , uint8_t *_currentScreen);
+void PrintCursor(uint8_t _pos)
+{
+  //imprime en la linea correspondiente
+  switch(_pos)
+  {
+    case 0: lcd.setCursor(19, 0);  //primera linea
+    break;
+
+    case 1: lcd.setCursor(19, 1);  //segunda linea
+    break;
+
+    case 2: lcd.setCursor(19, 2);  //tercera linea
+    break;
+
+    case 3: lcd.setCursor(19, 3);  //cuarta linea
+    break;
+
+    case 4: lcd.setCursor(19, 0);  //primer linea
+      break;
+
+    case 5: lcd.setCursor(19, 1);  //segunda linea
+      break;
+
+    case 6: lcd.setCursor(19, 2);  //tercera linea
+      break;
+      
+    case 7: lcd.setCursor(19, 3);  //cuarta linea
+      break;      
+
+    case 8: lcd.setCursor(19, 0);  //primera linea
+      break; 
+
+    case 9: lcd.setCursor(19, 1);  //segunda linea
+      break; 
+
+    case 10: lcd.setCursor(19, 2);  //tercera linea
+      break; 
+
+    default: break;
+  }
+  
+  lcd.print(">");
+}
+
+void UpdateCursor(uint8_t *_indexes , uint8_t *_currentScreen)
 {
 
 /*
@@ -283,17 +411,19 @@ void UpdateCursor(uint8_t *_indexes , uint8_t *_currentScreen);
 #define pagConfMenuCol_part3             13
 #define pagCreditos_part1                14
 #define pagCreditos_part2                15
+
+#define indicePagPpal         0
+#define indiceConfMenuPpal    1
+#define indiceConfMenuExt     2
+#define indiceConfSubMenuExt  3
+#define indiceConfMenuCol     4
+#define indiceCreditos        5
 */
   //limpia todos los cursores existentes
   CleanAllCursors();
-
-  //imprime en la lina correspondiente
-  lcd.setCursor(19, _pos);
-  lcd.print(">");
-
   switch(*_currentScreen)
   {
-    case pagPpal_part1:
+    case pagPpal_part1: 
     break;
     
     case pagPpal_part2:
@@ -302,37 +432,43 @@ void UpdateCursor(uint8_t *_indexes , uint8_t *_currentScreen);
     case pagPpal_part3:
     break;
     
-    case pagConfMenuPpal_part1:
+    case pagConfMenuPpal_part1: 
+      Serial.print(_indexes[indiceConfMenuPpal]);
+      PrintCursor(_indexes[indiceConfMenuPpal]);
     break;
     
-    case pagConfMenuPpal_part2:
+    case pagConfMenuPpal_part2: 
+      Serial.print(_indexes[indiceConfMenuPpal]);
+      PrintCursor(_indexes[indiceConfMenuPpal]);
     break;
     
-    case pagConfMenuExt_part1:
+    case pagConfMenuExt_part1:  
+      Serial.print(_indexes[indiceConfMenuPpal]);
+      PrintCursor(_indexes[indiceConfMenuExt]);
     break;
     
-    case pagConfMenuExt_part2:
+    case pagConfMenuExt_part2:  PrintCursor(_indexes[indiceConfMenuExt]);
     break;        
     
-    case pagConfMenuExt_part3:
+    case pagConfMenuExt_part3:  PrintCursor(_indexes[indiceConfMenuExt]);
     break;
     
-    case pagConfSubMenuExt:
+    case pagConfSubMenuExt: PrintCursor(_indexes[indiceConfSubMenuExt]);
     break;
     
     case pagConfSubMenuExtTemp:
     break;    
     
-    case pagConfMenuCol_part1:
+    case pagConfMenuCol_part1:  PrintCursor(_indexes[indiceConfMenuCol]);
     break; 
     
-    case pagConfMenuCol_part2:
+    case pagConfMenuCol_part2:  PrintCursor(_indexes[indiceConfMenuCol]);
     break; 
     
-    case pagConfMenuCol_part3:
+    case pagConfMenuCol_part3:  PrintCursor(_indexes[indiceConfMenuCol]);
     break; 
 
-    case pagCreditos_part1:
+    case pagCreditos_part1: 
     break; 
            
     case pagCreditos_part2:
@@ -346,7 +482,7 @@ void UpdateEncoder()
   static int previousTick;
   int currentTick = millis();
   
-  if(currentTick - previousTick > 300)
+  if(currentTick - previousTick > 200)
   {
     if(digitalRead(pin_DT) == digitalRead(pin_CLK))
     {
@@ -420,7 +556,9 @@ void UpdateDataGUI(uint8_t *_indexes , uint8_t *_btn , uint8_t *_currentScreen)
 {
   if(*_btn != NoPressed)  //si movieron el encoder
   {
-        Serial.println("PRESIONO OK");
+      if(*_btn == Ok) //rotaron encoder a izq
+      {    
+        //Serial.println("PRESIONO OK");
         switch(*_currentScreen)
         {
           case pagPpal_part1: //pantalla de trabajo
@@ -542,7 +680,6 @@ void UpdateDataGUI(uint8_t *_indexes , uint8_t *_btn , uint8_t *_currentScreen)
             else
             {
               _indexes[indiceConfMenuPpal]--;  //decrementa le n° de indice
-              UpdateCursor(_indexes[indiceConfMenuPpal]);
             }  
           break;
           /****************/
@@ -552,7 +689,6 @@ void UpdateDataGUI(uint8_t *_indexes , uint8_t *_btn , uint8_t *_currentScreen)
             {
               *_currentScreen = pagConfMenuPpal_part2;
               _indexes[indiceConfMenuPpal]--;  //decrementa le n° de indice 
-              UpdateCursor((_indexes[indiceConfMenuPpal] - 4));
             } 
           break;
 
@@ -625,8 +761,6 @@ void UpdateDataGUI(uint8_t *_indexes , uint8_t *_btn , uint8_t *_currentScreen)
 */
       else if (*_btn == Right)  //rotaron encoder a der
       {
-        Serial.println("MUEVE  DERECHA");
-        Serial.println(*_currentScreen);
         switch(*_currentScreen)
         {
           case pagPpal_part1: //pantalla de trabajo
@@ -640,40 +774,24 @@ void UpdateDataGUI(uint8_t *_indexes , uint8_t *_btn , uint8_t *_currentScreen)
           break;
           /****************/
           case pagPpal_part3: //pantalla de trabajo
-            *_currentScreen = pagPpal_part3;
-            _indexes[indicePagPpal]++;  //incrementa el n° de indice 
+            //*_currentScreen = pagPpal_part3; 
           break;
           /****************/
           case pagConfMenuPpal_part1: //menu principal (parte 1)
             Serial.println("ENTRA AL CASE");
-            Serial.print(_indexes[indiceConfMenuPpal]);
             if(_indexes[indiceConfMenuPpal] == 3)
             {
               *_currentScreen = pagConfMenuPpal_part2;
               _indexes[indiceConfMenuPpal]++;
-              UpdateCursor((_indexes[indiceConfMenuPpal]-4));
             }
-            else
-            {
-              _indexes[indiceConfMenuPpal]++;
-              //_indexes[indiceConfMenuPpal] = _indexes[indiceConfMenuPpal] + 1;
-              Serial.println(_indexes[indiceConfMenuPpal]);
-              UpdateCursor(_indexes[indiceConfMenuPpal]);
-              //Serial.println("MUEVE CURSOR");
-            }
-            
+            else  _indexes[indiceConfMenuPpal]++;
           break;
           /****************/
           case pagConfMenuPpal_part2: //menu principal (parte 2)
             _indexes[indiceConfMenuPpal]++;
             if(_indexes[indiceConfMenuPpal] > cantItemsConfMenuPpal) _indexes[indiceConfMenuPpal] = cantItemsConfMenuPpal;
-            else
-            {
-              _indexes[indiceConfMenuPpal]++;
-              UpdateCursor((_indexes[indiceConfMenuPpal]-4));            
-            }
+            else  _indexes[indiceConfMenuPpal]++;           
           break;
-                    /*++++++++++++++++++++++++++++++++++++++++++falta la parte d abajo de este if()++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
           /****************/          
           case pagConfMenuExt_part1: //menu EXTRUSORES (parte 1)
             if(_indexes[indiceConfMenuExt] == 3) *_currentScreen = pagConfMenuExt_part2;
@@ -715,15 +833,17 @@ void UpdateDataGUI(uint8_t *_indexes , uint8_t *_btn , uint8_t *_currentScreen)
           break;
           /****************/
           case pagCreditos_part1: //menu CREDITOS (parte 1)
+            *_currentScreen = pagCreditos_part2;
           break;
           /****************/
           case pagCreditos_part2: //menu CREDITOS (parte 2)
-            *_currentScreen = pagCreditos_part1;
+            
           break;
           /****************/
           default: break;
         }
       }
+  }
 }
 
 void ImprimirDisplay(const char _screen[][21])
