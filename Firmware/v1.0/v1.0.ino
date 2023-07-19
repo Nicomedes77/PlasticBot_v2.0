@@ -283,13 +283,13 @@ void UpdateLCD(uint8_t *_currentScreen)
 
     switch(*_currentScreen)
     {
-      case pagPpal_part1: PrintScreenWorking_1();
+      case pagPpal_part1: PrintScreenWorking_1(screenPagPpal_1);
       break;
 
-      case pagPpal_part2: PrintScreenWorking_2();
+      case pagPpal_part2: PrintScreenWorking_2(screenPagPpal_2);
       break;
 
-      case pagPpal_part3: PrintScreenWorking_3();
+      case pagPpal_part3: PrintScreenWorking_3(screenPagPpal_3);
       break;
 
       case pagConfMenuPpal_part1: PrintScreen(subMenuExtrusores);
