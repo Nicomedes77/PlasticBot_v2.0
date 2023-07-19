@@ -14,14 +14,13 @@
 //Conexiones del display
 LiquidCrystal_I2C lcd(0x27, 20, 4);
 
-//Conexiones del encoder
-int g_btnPressed;   //guarda estado del encoder
-
 //Rotative Encoder constants
 #define NoPressed   0
 #define Ok          1
 #define Left        2
 #define Right       3
+
+uint8_t g_btnPressed = NoPressed;   //guarda estado del encoder
 
 //numeracion de pantallas
 #define pagPpal_part1             1
@@ -57,16 +56,16 @@ int g_btnPressed;   //guarda estado del encoder
 #define indiceCreditos        5
 
 //numero de item por pantalla
- int indices[6] = {0, //indicePpal -> menú principal
-                   0, //indiceConfMenuPpal -> menu de configuración principal
-                   0, //indiceConfMenuExt -> menu de configuración extrusores
-                   0, //indiceConfSubMenuExt -> menu de configuración colectores
-                   0, //indiceConfMenuCol -> menu de configuración colectores
-                   0  //indiceCreditos -> créditos
-                   };            
+ uint8_t indices[6] = { 0, //indicePpal -> menú principal
+                        0, //indiceConfMenuPpal -> menu de configuración principal
+                        0, //indiceConfMenuExt -> menu de configuración extrusores
+                        0, //indiceConfSubMenuExt -> menu de configuración colectores
+                        0, //indiceConfMenuCol -> menu de configuración colectores
+                        0  //indiceCreditos -> créditos
+                      };            
 
 //Al iniciar el equipo, luego de la presentación, muestra en pantalla la 1er parte del menu de configuración
-int pantallaActual = pagConfMenuPpal_part1;
+uint8_t pantallaActual = pagConfMenuPpal_part1;
 
 const char screenPresentacion[4][21] PROGMEM = {
                              "      Proyecto      ",
@@ -172,30 +171,38 @@ const char screenPagCreditos[4][21]PROGMEM = {
                             "Esp.Ing.Vargas Alice",
                             "      Año 2023      ",
                              };
-const char iconos[2][2]PROGMEM = {"X" , ">"};
+const char iconos[3][2]PROGMEM = {"X" , ">" , " "};
 
 //***************************************************************
 //******************* PROTOTIPOS DE FUNCIONES *******************
 //***************************************************************
 
 void ImprimirDisplay(const char _screen[][21]);
-void UpdateCursor(void);
 void Modulos_init(void);
 void PetConv_Init(PETfilConv *_petFilConv);
-void UpdateSensorsFilament();
 void UpdateEncoder();
-void updateDataGUI(uint8_t *_indexes , uint8_t *_btn , uint32_t *_currentScreen);
+void UpdateDataGUI(uint8_t *_indexes , uint8_t *_btn , uint8_t *_currentScreen);
+void UpdateCursor(uint8_t *_indexes , uint8_t *_currentScreen);
 
-void setup() {
+void setup() 
+{
   Modulos_init();
   ImprimirDisplay(screenPresentacion);    // Muestra pantalla presentacion
-  delay(3000);
+  delay(1000);
   ImprimirDisplay(screenPagConfMenuPpal_1);    // Muestra pantalla presentacion
+  UpdateCursor(indices[indiceConfMenuPpal]);
 }
 
 void loop()
 {
-  // Nada que hacer aquí
+  if(g_btnPressed != NoPressed)
+  {
+    //void UpdateDataGUI(uint8_t *_indexes , uint8_t *_btn , uint32_t *_currentScreen);
+    UpdateDataGUI(indices , &g_btnPressed , &pantallaActual);
+    //updateCursor(indexes,&PETfilConv1,&currentScreen,&g_velocidad_Col1);
+    UpdateCursor(indices , &pantallaActual);
+    g_btnPressed = NoPressed;  
+  }
 }
 
 void Modulos_init(void)
@@ -247,17 +254,92 @@ void Modulos_init(void)
   pinMode(ext7_pwm, OUTPUT);
 }
 
-void UpdateCursor(void)
+void CleanAllCursors(void)
 {
+  // Limpia el cursor de todos las lineas
+  for( uint8_t i=0; i<4; i++ )
+  {
+    lcd.setCursor(19, i);
+    lcd.print(" ");
+  }
 }
 
-
-void UpdateSensorsFilament()
+void UpdateCursor(uint8_t *_indexes , uint8_t *_currentScreen);
 {
 
+/*
+#define pagPpal_part1                     1
+#define pagPpal_part2                     2
+#define pagPpal_part3                     3
+#define pagConfMenuPpal_part1             4
+#define pagConfMenuPpal_part2             5
+#define pagConfMenuExt_part1              6
+#define pagConfMenuExt_part2              7
+#define pagConfMenuExt_part3              8
+#define pagConfSubMenuExt                 9
+#define pagConfSubMenuExtTemp            10
+#define pagConfMenuCol_part1             11
+#define pagConfMenuCol_part2             12
+#define pagConfMenuCol_part3             13
+#define pagCreditos_part1                14
+#define pagCreditos_part2                15
+*/
+  //limpia todos los cursores existentes
+  CleanAllCursors();
+
+  //imprime en la lina correspondiente
+  lcd.setCursor(19, _pos);
+  lcd.print(">");
+
+  switch(*_currentScreen)
+  {
+    case pagPpal_part1:
+    break;
     
+    case pagPpal_part2:
+    break;
+    
+    case pagPpal_part3:
+    break;
+    
+    case pagConfMenuPpal_part1:
+    break;
+    
+    case pagConfMenuPpal_part2:
+    break;
+    
+    case pagConfMenuExt_part1:
+    break;
+    
+    case pagConfMenuExt_part2:
+    break;        
+    
+    case pagConfMenuExt_part3:
+    break;
+    
+    case pagConfSubMenuExt:
+    break;
+    
+    case pagConfSubMenuExtTemp:
+    break;    
+    
+    case pagConfMenuCol_part1:
+    break; 
+    
+    case pagConfMenuCol_part2:
+    break; 
+    
+    case pagConfMenuCol_part3:
+    break; 
 
+    case pagCreditos_part1:
+    break; 
+           
+    case pagCreditos_part2:
+    break;                      
+  }
 }
+
 
 void UpdateEncoder()
 {
@@ -269,13 +351,13 @@ void UpdateEncoder()
     if(digitalRead(pin_DT) == digitalRead(pin_CLK))
     {
       g_btnPressed = Right;
-      Serial.println("RIGHT");
+      //Serial.println("RIGHT");
     }
     
     else
     {
       g_btnPressed = Left;
-      Serial.println("LEFT");
+      //Serial.println("LEFT");
     }
     
   }
@@ -307,7 +389,7 @@ void UpdateEncoderCCW()
 void UpdateEncoderSW()
 {
   g_btnPressed = Ok;
-  Serial.println("CLICK");
+  //Serial.println("CLICK");
 }
 /*
 #define pagPpal_part1                     1
@@ -333,13 +415,12 @@ void UpdateEncoderSW()
 #define indiceConfMenuCol     4
 #define indiceCreditos        5
 */
-void updateDataGUI(uint8_t *_indexes , uint8_t *_btn , uint32_t *_currentScreen)
+void UpdateDataGUI(uint8_t *_indexes , uint8_t *_btn , uint8_t *_currentScreen)
 //void updateDataGUI()
 {
   if(*_btn != NoPressed)  //si movieron el encoder
   {
-      if(*_btn == Ok)   //presionaron encoder
-      {
+        Serial.println("PRESIONO OK");
         switch(*_currentScreen)
         {
           case pagPpal_part1: //pantalla de trabajo
@@ -437,6 +518,7 @@ void updateDataGUI(uint8_t *_indexes , uint8_t *_btn , uint32_t *_currentScreen)
 
       else if(*_btn == Left) //rotaron encoder a izq
       {
+        Serial.println("MUEVE  IZQUIERDA");
         switch(*_currentScreen)
         {
           case pagPpal_part1: //pantalla de trabajo
@@ -446,7 +528,7 @@ void updateDataGUI(uint8_t *_indexes , uint8_t *_btn , uint32_t *_currentScreen)
           /****************/
           case pagPpal_part2: //pantalla de trabajo
             if(_indexes[indicePagPpal] == 1)  *_currentScreen = pagPpal_part1;
-            _indexes[indicePagPpal]--;  //decrementa le n° de indice 
+            _indexes[indicePagPpal]--;  //decrementa le n° de indice
           break;
           /****************/
           case pagPpal_part3: //pantalla de trabajo
@@ -457,14 +539,24 @@ void updateDataGUI(uint8_t *_indexes , uint8_t *_btn , uint32_t *_currentScreen)
           case pagConfMenuPpal_part1: //menu principal (parte 1)
             *_currentScreen = pagConfMenuPpal_part1;
             if(_indexes[indiceConfMenuPpal] == 0)  _indexes[indiceConfMenuPpal] = 0;  //decrementa le n° de indice
-            else  _indexes[indiceConfMenuPpal]--;  //decrementa le n° de indice
+            else
+            {
+              _indexes[indiceConfMenuPpal]--;  //decrementa le n° de indice
+              UpdateCursor(_indexes[indiceConfMenuPpal]);
+            }  
           break;
           /****************/
           case pagConfMenuPpal_part2: //menu principal (parte 2)
             if(_indexes[indiceConfMenuPpal] == 4) *_currentScreen = pagConfMenuPpal_part1;
-            else *_currentScreen = pagConfMenuPpal_part2;
-            _indexes[indiceConfMenuPpal]--;  //decrementa le n° de indice                        
+            else 
+            {
+              *_currentScreen = pagConfMenuPpal_part2;
+              _indexes[indiceConfMenuPpal]--;  //decrementa le n° de indice 
+              UpdateCursor((_indexes[indiceConfMenuPpal] - 4));
+            } 
           break;
+
+          /*++++++++++++++++++++++++++++++++++++++++++falta la parte d abajo de este if()++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
           /****************/          
           case pagConfMenuExt_part1: //menu EXTRUSORES (parte 1)
             if(_indexes[indiceConfMenuExt] == 0) _indexes[indiceConfMenuExt] = 0;
@@ -533,6 +625,8 @@ void updateDataGUI(uint8_t *_indexes , uint8_t *_btn , uint32_t *_currentScreen)
 */
       else if (*_btn == Right)  //rotaron encoder a der
       {
+        Serial.println("MUEVE  DERECHA");
+        Serial.println(*_currentScreen);
         switch(*_currentScreen)
         {
           case pagPpal_part1: //pantalla de trabajo
@@ -551,14 +645,35 @@ void updateDataGUI(uint8_t *_indexes , uint8_t *_btn , uint32_t *_currentScreen)
           break;
           /****************/
           case pagConfMenuPpal_part1: //menu principal (parte 1)
-            if(_indexes[indiceConfMenuPpal] == 3) *_currentScreen = pagConfMenuPpal_part2;
-            _indexes[indiceConfMenuPpal]++;
+            Serial.println("ENTRA AL CASE");
+            Serial.print(_indexes[indiceConfMenuPpal]);
+            if(_indexes[indiceConfMenuPpal] == 3)
+            {
+              *_currentScreen = pagConfMenuPpal_part2;
+              _indexes[indiceConfMenuPpal]++;
+              UpdateCursor((_indexes[indiceConfMenuPpal]-4));
+            }
+            else
+            {
+              _indexes[indiceConfMenuPpal]++;
+              //_indexes[indiceConfMenuPpal] = _indexes[indiceConfMenuPpal] + 1;
+              Serial.println(_indexes[indiceConfMenuPpal]);
+              UpdateCursor(_indexes[indiceConfMenuPpal]);
+              //Serial.println("MUEVE CURSOR");
+            }
+            
           break;
           /****************/
           case pagConfMenuPpal_part2: //menu principal (parte 2)
             _indexes[indiceConfMenuPpal]++;
             if(_indexes[indiceConfMenuPpal] > cantItemsConfMenuPpal) _indexes[indiceConfMenuPpal] = cantItemsConfMenuPpal;
+            else
+            {
+              _indexes[indiceConfMenuPpal]++;
+              UpdateCursor((_indexes[indiceConfMenuPpal]-4));            
+            }
           break;
+                    /*++++++++++++++++++++++++++++++++++++++++++falta la parte d abajo de este if()++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
           /****************/          
           case pagConfMenuExt_part1: //menu EXTRUSORES (parte 1)
             if(_indexes[indiceConfMenuExt] == 3) *_currentScreen = pagConfMenuExt_part2;
@@ -609,7 +724,6 @@ void updateDataGUI(uint8_t *_indexes , uint8_t *_btn , uint32_t *_currentScreen)
           default: break;
         }
       }
-  }
 }
 
 void ImprimirDisplay(const char _screen[][21])
